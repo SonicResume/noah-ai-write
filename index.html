@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Page Title -->
+  <title>NOAH AI Writer</title>
+
+  <!-- Description -->
+  <meta name="description" content="NOAH AI Writer is an AI-powered writing assistant that helps you rewrite, expand, summarize, and refine text instantly." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AIWrite - AI Writing Assistant" />
+  <meta property="og:description" content="Write faster and smarter with NOAH AI Writer. AI tools to rewrite, expand, summarize, and polish your writing." />
+  <meta property="og:image" content="/logo.png" />
+  <meta property="og:url" content="http://localhost:4174" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="NOAH AI Writer" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NOAH AI Writer" />
+  <meta name="twitter:description" content="AI tools to improve and refine your writing instantly." />
+  <meta name="twitter:image" content="/logo.png" />
+
+  <!-- ✅ FAVICON (PNG) -->
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="shortcut icon" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+
+  <!-- Loading Styles -->
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: white;
+    }
+
+    #loading {
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    #loading img {
+      width: 120px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    #loading h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    #loading p {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- React App Mount -->
+  <div id="root">
+    <div id="loading">
+      <img src="/logo.png" alt="NOAH AI Writerlogo" />
+      <h1>NOAH AI Write</h1>
+      <p>Loading AI writing tools...</p>
+    </div>
+  </div>
+
+  <!-- React Entry -->
+  <script type="module" src="/src/react-app/main.tsx"></script>
+
+</body>
+</html>

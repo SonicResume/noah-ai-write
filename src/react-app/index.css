@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+--background: 30 15% 8%;   
+  --foreground: 0 0% 96%;  
+  --card: 30 12% 12%;
+    --card-foreground: 25 20% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 20% 10%;
+    --primary: 30 85% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 35 15% 88%;
+    --secondary-foreground: 25 20% 15%;
+    --muted: 35 12% 90%;
+    --muted-foreground: 40 20% 82%;   
+    --accent: 35 20% 85%;
+    --accent-foreground: 25 20% 12%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 15% 75%;
+    --input: 30 15% 80%;
+    --ring: 30 85% 45%;
+    --radius: 0.5rem;
+    --chart-1: 35 90% 55%;
+    --chart-2: 35 80% 45%;
+    --chart-3: 35 70% 40%;
+    --chart-4: 35 60% 35%;
+    --chart-5: 35 50% 30%;
+  }
+
+  .dark {
+    --background: 220 25% 6%;
+    --foreground: 0 0% 96%;
+    --card: 220 20% 10%;
+    --card-foreground: 40 25% 92%;
+    --popover: 30 12% 12%;
+    --popover-foreground: 40 25% 92%;
+    --primary: 35 90% 55%;
+    --primary-foreground: 30 15% 8%;
+    --secondary: 30 10% 18%;
+    --secondary-foreground: 40 20% 85%;
+    --muted: 30 8% 16%;
+    --muted-foreground: 35 10% 55%;
+    --accent: 30 10% 20%;
+    --accent-foreground: 40 20% 90%;
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 35 8% 22%;
+    --input: 35 8% 25%;
+    --ring: 35 90% 55%;
+    --chart-1: 35 90% 60%;
+    --chart-2: 35 80% 50%;
+    --chart-3: 35 70% 45%;
+    --chart-4: 35 60% 40%;
+    --chart-5: 35 50% 35%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+@apply bg-background text-gray-900 antialiased;    
+font-family: "Inter Variable", "Inter", system-ui, sans-serif;
+  }
+
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Subtle background pattern */
+.ink-pattern {
+  background-image: radial-gradient(circle at 2px 2px, hsl(var(--muted-foreground) / 0.03) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Glow effect for active states */
+.amber-glow {
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.15), 0 0 40px hsl(var(--primary) / 0.08);
+}
+
+/* Text shimmer loading animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted-foreground) / 0.1) 0%,
+    hsl(var(--muted-foreground) / 0.25) 50%,
+    hsl(var(--muted-foreground) / 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
