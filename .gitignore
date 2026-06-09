@@ -1,10 +1,5 @@
 node_modules
-.env
-backend/node_modules
-backend/uploads
-backend/users.json
-.vercel
 dist
-build
-test.txt
-package.backup.json
+.vite
+.env
+Hermes-Studio

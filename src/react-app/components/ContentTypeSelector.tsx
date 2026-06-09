@@ -1,4 +1,4 @@
-import { Book, BookOpen } from "lucide-react";
+import { Book, BookOpen, AlignLeft } from "lucide-react";
 import {
   FileText,
   FileBarChart
