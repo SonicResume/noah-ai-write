@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { 
   RefreshCw, 
   Expand, 
@@ -6,13 +6,10 @@ import {
   CheckCircle, 
   MessageSquare, 
   Languages,
-  Sparkles,
   Copy,
   ArrowRight,
-  Upload,
-  File,
-  X,
-  Download
+  Download,
+  RotateCcw
 } from "lucide-react";
 import { ToolButton } from "@/react-app/components/ToolButton";
 import { ToneSelector } from "@/react-app/components/ToneSelector";
@@ -42,43 +39,6 @@ export default function ToolPage() {
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
   const [selectedContentType, setSelectedContentType] = useState(contentTypes[0].id);
   const [copied, setCopied] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Check file size (max 100KB for text files)
-    if (file.size > 100 * 1024) {
-      alert("File is too large. Please upload a file smaller than 100KB.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setInputText(text);
-      setUploadedFile({ name: file.name, size: file.size });
-    };
-    reader.onerror = () => {
-      alert("Failed to read file. Please try again.");
-    };
-    reader.readAsText(file);
-  };
-
-  const clearUploadedFile = () => {
-    setUploadedFile(null);
-    setInputText("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  };
 
   // Load Google Fonts
   useEffect(() => {
@@ -89,48 +49,50 @@ export default function ToolPage() {
     return () => { document.head.removeChild(link); };
   }, []);
 
- const handleProcess = async () => {
+  const handleReset = () => {
+    setInputText("");
+    setOutputText("");
+  };
 
-  if (!inputText.trim()) return;
+  const handleProcess = async () => {
+    if (!inputText.trim()) return;
 
-  if (inputText.length > 10000) {
-    alert("Text too long (max 10,000 characters)");
-    return;
-  }
-
-  setIsProcessing(true);
-  setOutputText("");
-
-  try {
-    const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/process`,
-  {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      tool: selectedTool,
-      text: inputText,
-      tone: selectedTool === "tone" ? selectedTone : undefined,
-      language: selectedTool === "translate" ? selectedLanguage : undefined,
-      contentType: selectedContentType,
-    }),
-  }
-);
-
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(err);
+    if (inputText.length > 10000) {
+      alert("Text too long (max 10,000 characters)");
+      return;
     }
 
-    const data = await response.json();
-    setOutputText(data.result);
+    setIsProcessing(true);
+    setOutputText("");
 
-  } catch (error: any) {
-    setOutputText(error.message || "Processing failed.");
-  } finally {
-    setIsProcessing(false);
-  }
-};
+    try {
+      const response = await fetch("https://my-backend-1-qzxx.onrender.com/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: inputText,
+          tool: selectedTool,
+          tone: selectedTool === "tone" ? selectedTone : undefined,
+          language: selectedTool === "translate" ? selectedLanguage : undefined,
+          contentType: selectedContentType,
+        }),
+      });
+
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
+      }
+
+      const data = await response.json();
+      setOutputText(data.result);
+
+    } catch (error: any) {
+      setOutputText(error.message || "Processing failed.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleCopy = async () => {
     if (!outputText) return;
@@ -153,12 +115,10 @@ export default function ToolPage() {
     URL.revokeObjectURL(url);
   };
 
-  const currentTool = tools.find(t => t.id === selectedTool);
-
   return (
     <div className="min-h-screen bg-background ink-pattern">
-
       <main className="max-w-6xl mx-auto px-4 py-8">
+        
         {/* Content Type Selection */}
         <ContentTypeSelector 
           selectedType={selectedContentType} 
@@ -198,49 +158,51 @@ export default function ToolPage() {
 
         {/* Main Content Area */}
         <div className="grid md:grid-cols-2 gap-6">
+          
           {/* Input Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-foreground">Your Text</label>
               <div className="flex items-center gap-3">
-                {uploadedFile && (
-                  <div className="flex items-center gap-2 px-2 py-1 bg-primary/10 rounded-md">
-                    <File className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-xs text-foreground">{uploadedFile.name}</span>
-                    <span className="text-xs text-muted-foreground">({formatFileSize(uploadedFile.size)})</span>
-                    <button 
-                      onClick={clearUploadedFile}
-                      className="p-0.5 hover:bg-primary/20 rounded transition-colors"
-                    >
-                      <X className="w-3 h-3 text-muted-foreground hover:text-foreground" />
-                    </button>
-                  </div>
-                )}
                 <span className="text-xs text-muted-foreground">{inputText.length} characters</span>
               </div>
             </div>
+            
             <div className="relative">
               <textarea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Paste or type your text here..."
                 className="w-full h-72 p-4 bg-card border border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all custom-scrollbar text-foreground placeholder:text-muted-foreground"
-                style={{ fontFamily: "'Inter', sans-serif" }}
               />
-              {/* File Upload Button */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".txt,.md,.pdf,.doc,.docx,.csv"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground rounded-lg text-xs font-medium transition-all border border-border/50"
+            </div>
+            
+            {/* Action Bar */}
+            <div className="flex justify-between items-center pt-2">
+              <button 
+                type="button"
+                onClick={handleReset}
+                disabled={!inputText && !outputText}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border rounded-lg bg-card text-foreground hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
-                <Upload className="w-3.5 h-3.5" />
-                Upload file
+                <RotateCcw className="w-4 h-4" /> Reset
+              </button>
+
+              <button
+                type="button"
+                onClick={handleProcess}
+                disabled={isProcessing || !inputText.trim()}
+                className="flex items-center gap-2 px-5 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+              >
+                {isProcessing ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" /> Processing...
+                  </>
+                ) : (
+                  <>
+                    Generate content <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -248,79 +210,45 @@ export default function ToolPage() {
           {/* Output Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Result</label>
-              {outputText && (
-                <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-foreground">Generated Output</label>
+              {outputText && !isProcessing && (
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={handleExport}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    type="button"
+                    onClick={handleCopy}
+                    className="flex items-center gap-1 text-xs text-primary hover:underline font-medium transition-all"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    Export
+                    <Copy className="w-3 h-3" />
+                    {copied ? "Copied!" : "Copy Output"}
                   </button>
                   <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    type="button"
+                    onClick={handleExport}
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground font-medium transition-all"
                   >
-                    <Copy className="w-3.5 h-3.5" />
-                    {copied ? "Copied!" : "Copy"}
+                    <Download className="w-3 h-3" /> Export
                   </button>
                 </div>
               )}
             </div>
+            
             <div className="relative">
-              <div 
-                className={`w-full h-72 p-4 bg-card border border-border rounded-xl overflow-auto custom-scrollbar ${
-                  isProcessing ? "loading-shimmer" : ""
-                }`}
-              >
-                {isProcessing ? (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Sparkles className="w-4 h-4 animate-pulse" />
-                    <span className="text-sm">Processing your text...</span>
-                  </div>
-                ) : outputText ? (
-                  <p className="text-foreground whitespace-pre-wrap leading-relaxed">{outputText}</p>
-                ) : (
-                  <p className="text-muted-foreground/60 text-sm italic">
-                    Your {currentTool?.label.toLowerCase()} result will appear here...
-                  </p>
-                )}
-              </div>
+              {isProcessing && (
+                <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] flex justify-center items-center rounded-xl z-10">
+                  <RefreshCw className="w-8 h-8 text-primary animate-spin" />
+                </div>
+              )}
+              <textarea
+                value={outputText}
+                readOnly
+                placeholder="AI response layout content outputs here..."
+                className="w-full h-72 p-4 bg-card border border-border rounded-xl resize-none focus:outline-none text-foreground placeholder:text-muted-foreground custom-scrollbar"
+              />
             </div>
           </div>
-        </div>
 
-        {/* Action Button */}
-        <div className="mt-6 flex justify-center">
-          <button
-            onClick={handleProcess}
-            disabled={!inputText.trim() || isProcessing}
-            className="group flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all amber-glow"
-          >
-            {isProcessing ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                {currentTool?.label}
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Feature Description */}
-        <div className="mt-12 text-center">
-          <p className="text-muted-foreground text-sm max-w-lg mx-auto">
-            {currentTool?.description}. Simply paste your text, click the button, and watch the magic happen.
-          </p>
         </div>
       </main>
-
     </div>
   );
 }
