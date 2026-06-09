@@ -1,3 +1,6 @@
+.vercel
+package.backup.json
+test.txt
 node_modules
 dist
 .vite
