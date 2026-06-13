@@ -54,47 +54,57 @@ export default function ToolPage() {
     setOutputText("");
   };
 
-  const handleProcess = async () => {
-    if (!inputText.trim()) return;
+const handleProcess = async () => {
+  if (!inputText.trim()) return;
 
-    if (inputText.length > 10000) {
-      alert("Text too long (max 10,000 characters)");
-      return;
-    }
+  if (inputText.length > 10000) {
+    alert("Text too long (max 10,000 characters)");
+    return;
+  }
 
-    setIsProcessing(true);
-    setOutputText("");
+  setIsProcessing(true);
+  setOutputText("");
 
-    try {
-      const response = await fetch("https://my-backend-1-qzxx.onrender.com/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: inputText,
-          tool: selectedTool,
-          tone: selectedTool === "tone" ? selectedTone : undefined,
-          language: selectedTool === "translate" ? selectedLanguage : undefined,
-          contentType: selectedContentType,
-        }),
-      });
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://my-backend-1-qdhh.onrender.com";
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
 
-      if (!response.ok) {
-        const err = await response.text();
-        throw new Error(err);
-      }
-
-      const data = await response.json();
-      setOutputText(data.result);
-
-    } catch (error: any) {
-      setOutputText(error.message || "Processing failed.");
-    } finally {
-      setIsProcessing(false);
-    }
+  const payload: any = {
+    text: inputText,
+    tool: selectedTool,
+    contentType: selectedContentType,
   };
 
-  const handleCopy = async () => {
+  if (selectedTool === "tone") payload.tone = selectedTone;
+  if (selectedTool === "translate") payload.language = selectedLanguage;
+
+  try {
+    const response = await fetch(`${API_URL}/api/ai`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    const data = await response.json();
+    setOutputText(data.result);
+
+  } catch (error: any) {
+    setOutputText(error.message || "Processing failed.");
+  } finally {
+    setIsProcessing(false);
+  }
+};
+const handleCopy = async () => {
     if (!outputText) return;
     await navigator.clipboard.writeText(outputText);
     setCopied(true);
