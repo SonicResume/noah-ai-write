@@ -6,6 +6,7 @@ import {
   CheckCircle, 
   MessageSquare, 
   Languages,
+  Video,
   Copy,
   ArrowRight,
   Download,

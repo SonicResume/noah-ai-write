@@ -22,7 +22,7 @@ export default function App() {
           <Route index element={<LandingPage />} />
 
           {/* Auth */}
-          <Route path="login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
           {/* App */}
           <Route path="dashboard" element={<Dashboard />} />
@@ -30,8 +30,8 @@ export default function App() {
           {/* Pages */}
           <Route path="contact" element={<Contact />} />
           <Route path="pricing" element={<Pricing />} />
-         <Route path="/terms" element={<Terms />} />
-         <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
   
           {/* 2. Added the new Blog path under your main Layout wrapper */}
           <Route path="blog" element={<FunBlogPostPage />} />

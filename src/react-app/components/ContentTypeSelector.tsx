@@ -1,7 +1,11 @@
-import { Book, BookOpen, AlignLeft } from "lucide-react";
 import {
+  Book,
+  BookOpen,
   FileText,
-  FileBarChart
+  FileBarChart,
+  Video,
+  Sparkles,
+  Mic
 } from "lucide-react";
 
 const contentTypes = [
@@ -11,6 +15,12 @@ const contentTypes = [
   { id: "guide", label: "Guide", icon: Book },
   { id: "report", label: "Report", icon: FileBarChart },
   { id: "ebook", label: "eBook", icon: BookOpen },
+
+  // 🎬 SCRIPTING
+  { id: "youtube_script", label: "YouTube Script", icon: Video },
+  { id: "tiktok_script", label: "TikTok Script", icon: Sparkles },
+  { id: "reels_script", label: "Reels Script", icon: Sparkles },
+  { id: "podcast_script", label: "Podcast Script", icon: Mic },
 ];
 
 interface ContentTypeSelectorProps {
@@ -24,10 +34,12 @@ export function ContentTypeSelector({ selectedType, onSelect }: ContentTypeSelec
       <h2 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">
         Content Type
       </h2>
+
       <div className="flex flex-wrap gap-2">
         {contentTypes.map((type) => {
           const Icon = type.icon;
           const isSelected = selectedType === type.id;
+
           return (
             <button
               key={type.id}
