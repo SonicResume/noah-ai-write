@@ -71,37 +71,53 @@ const handleProcess = async () => {
     "https://my-backend-1-qdhh.onrender.com";
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
 
-  const payload: any = {
+  // Allow up to 2 minutes for AI processing.
+  const timeout = setTimeout(() => controller.abort(), 120000);
+
+  const payload = {
     text: inputText,
     tool: selectedTool,
     contentType: selectedContentType,
+    ...(selectedTool === "tone" ? { tone: selectedTone } : {}),
+    ...(selectedTool === "translate" ? { language: selectedLanguage } : {}),
   };
-
-  if (selectedTool === "tone") payload.tone = selectedTone;
-  if (selectedTool === "translate") payload.language = selectedLanguage;
 
   try {
     const response = await fetch(`${API_URL}/api/ai`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
 
-    clearTimeout(timeout);
-
     if (!response.ok) {
-      throw new Error(await response.text());
+      throw new Error(
+        `AI service error (${response.status}): ${await response.text()}`
+      );
     }
 
     const data = await response.json();
-    setOutputText(data.result);
 
+    if (!data?.result) {
+      throw new Error("The AI service returned an empty response.");
+    }
+
+    setOutputText(data.result);
   } catch (error: any) {
-    setOutputText(error.message || "Processing failed.");
+    if (error?.name === "AbortError") {
+      setOutputText(
+        "The AI request timed out. Please try again."
+      );
+    } else {
+      setOutputText(
+        error?.message || "Processing failed. Please try again."
+      );
+    }
   } finally {
+    clearTimeout(timeout);
     setIsProcessing(false);
   }
 };
