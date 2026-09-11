@@ -1,22 +1,11 @@
-NOAH AI Writer SaaS Starter Kit License
-Copyright (c) 2026 NOAH AI Writer. All rights reserved.
+Copyright © 2026 SonicResume. All rights reserved.
 
-Subject to the terms and conditions of this License, the Licensor hereby grants 
-the Licensee a non-exclusive, non-transferable, worldwide license to use, 
-modify, and deploy the source code contained within this repository.
+This software and its source code are proprietary and confidential.
 
-PERMITTED USES:
-1. You may use this source code to build, host, and deploy unlimited commercial 
-   SaaS applications or personal projects for end-users.
-2. You may modify the design, color palettes, backend logic, and frontend components.
+No permission is granted to copy, modify, distribute, sublicense, publish, sell, resell, or create derivative works from this software, in whole or in part, without prior written permission from the copyright holder.
 
-STRICT RESTRICTIONS:
-1. You CANNOT redistribute, resell, sub-license, share, or lease this raw source 
-   code repository or any modified variation of it as a template, starter kit, 
-   boilerplate, or UI library.
-2. You CANNOT make this repository publicly accessible on GitHub or any other 
-   code hosting platform.
+The software may not be reproduced, incorporated into another project, redistributed, or made available publicly without explicit written authorization.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-IMPLIED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
-CLAIM, DAMAGES OR OTHER LIABILITY.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+
+For licensing inquiries or permission to use this software, contact SonicResume.
