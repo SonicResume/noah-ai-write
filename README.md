@@ -106,7 +106,7 @@ The backend URL is configured through the `VITE_API_URL` environment variable.
 Example:
 
 ```env
-VITE_API_URL=https://my-backend-qdhh.onrender.com
+VITE_API_URL=https://my-backend-example.com
 ```
 
 ## License
