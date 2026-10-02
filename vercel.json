@@ -1,9 +1,8 @@
 {
-  "redirects": [
+  "rewrites": [
     {
-      "source": "/contact",
-      "destination": "https://www.sonicresume.com/contact",
-      "permanent": true
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
