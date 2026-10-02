@@ -66,6 +66,13 @@ function ToolTabs() {
         >
           Camera
         </Link>
+
+        <Link
+          to="/writing-tools"
+          className="rounded-lg px-5 py-2.5 text-sm font-semibold text-[#6B625B] hover:bg-[#F7F2EC]"
+        >
+          Content
+        </Link>
       </div>
     </div>
   );
@@ -444,18 +451,18 @@ function CameraPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto flex flex-col items-center px-4 py-8 h-screen">
+        <ToolTabs />
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-6">
             <Camera className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
 
           <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            NOAH Camera Scanner
+            Camera Scanner
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Experience seamless image capture with our responsive camera component.
-            Optimized for both desktop and mobile devices with intelligent UI adaptation.
+          “Use your camera to capture an image. Once captured, your image will appear in the sidebar of the Scanner page.”
           </p>
         </div>
 
@@ -466,7 +473,7 @@ function CameraPage() {
                 <button
                   type="button"
                   onClick={() => setOpen(true)}
-  className="h-12 bg-[#35D07F] hover:bg-[#2DBA70] text-[#07140D] px-8 py-3 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 cursor-pointer whitespace-nowrap"
+  className="h-16 bg-[#35D07F] hover:bg-[#2DBA70] text-[#07140D] px-8 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 cursor-pointer whitespace-nowrap"
                 >
                   <Camera className="w-5 h-5 mr-2" />
                   Launch Camera

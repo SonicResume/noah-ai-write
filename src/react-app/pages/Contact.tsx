@@ -20,7 +20,7 @@ export default function ContactPage() {
           letterSpacing: "-1px",
         }}
       >
-        Contact NOAH
+        Contact 
       </h1>
 
       <p

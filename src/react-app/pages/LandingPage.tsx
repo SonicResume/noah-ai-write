@@ -69,21 +69,20 @@ export default function LandingPage() {
         <div className="relative z-20 w-full max-w-2xl text-center lg:w-1/2 lg:text-left">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-xs text-cyan-300 backdrop-blur">
             <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
-            NOAH AI VISUAL SCANNER
+            AI Text Analyzer
           </div>
 
           <h1 className="text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            AI Visual.
+           Intelligent Writing Toolr.
             <br />
             <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
-              Scanner.
+              & Scanner.
             </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-xl text-base leading-7 text-gray-400 sm:text-lg lg:mx-0">
             Turn your camera into an intelligent assistant.
-            Scan signs, menus, documents and unfamiliar places with
-            instant AI-powered understanding.
+            Scan images, write, edit, and translate.
           </p>
 
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
@@ -93,7 +92,7 @@ export default function LandingPage() {
               }}
               className="rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-black shadow-[0_0_40px_rgba(255,255,255,0.12)] transition hover:scale-[1.02] hover:bg-cyan-50"
             >
-              Start Scanning
+              Start Now
             </button>
 
             <button
@@ -184,7 +183,7 @@ export default function LandingPage() {
 
             <div className="mt-1 flex items-center gap-2 text-sm">
               <span className="text-cyan-300">●</span>
-              Global Intelligence
+              AI Intelligence
             </div>
           </div>
         </div>
@@ -201,7 +200,7 @@ export default function LandingPage() {
           </div>
 
           <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-            Your AI window into the world.
+            For a better view of your images.
           </h2>
 
           <p className="mt-4 text-gray-400">

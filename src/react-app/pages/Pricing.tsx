@@ -8,59 +8,65 @@ const plans = [
     name: "Free",
     planKey: "free",
     price: 0,
-    desc: "Get started with NOAH AI Visual.",
+    desc: "Turn photos, scans, and handwriting into editable digital text.",
     stripePriceId: null,
     features: [
       "10 OCR scans per day",
+      "Extract text from images",
       "Handwritten text recognition",
-      "Image upload & drag-and-drop",
-      "Camera image capture",
-      "History of recent scans",
+      "Camera capture",
+      "Image upload",
+      "Recent scan history",
     ],
   },
   {
     name: "Pro",
     planKey: "pro",
     price: 19,
-    desc: "For frequent scanning and everyday use.",
+    desc: "Extract text, then use AI to rewrite, improve, summarize, and translate it.",
     stripePriceId: "price_1TbF9BPE4wCsfg732ScUJfmc",
     features: [
       "Unlimited OCR scans",
-      "Advanced handwritten text recognition",
-      "Image upload & drag-and-drop",
-      "Camera image capture",
-      "Unlimited scan history",
-      "Priority processing",
+      "Handwriting-to-text",
+      "Image & camera capture",
+      "Editable extracted text",
+      "AI writing tools",
+      "AI translation",
+      "Scan history",
     ],
   },
   {
     name: "Business",
     planKey: "business",
     price: 29,
-    desc: "For professionals and document-heavy workflows.",
+    desc: "Turn documents into usable text and move directly into AI-powered writing and translation.",
     stripePriceId: "price_1TnzrFPE4wCsfg73xSOMZNuH",
     features: [
       "Everything in Pro",
-      "Unlimited OCR scans",
-      "High-volume image processing",
-      "Camera capture & image history",
+      "High-volume OCR",
+      "Advanced document processing",
+      "AI rewriting & editing",
+      "AI translation",
+      "Document history",
       "Priority processing",
-      "Priority support",
     ],
   },
   {
     name: "Premium",
     planKey: "premium",
     price: 49,
-    desc: "The complete NOAH AI Visual experience.",
+    desc: "Capture → OCR → Edit → Write → Translate — all in one workflow.",
     stripePriceId: "price_1TGwAJPE4wCsfg73gMQlv8Ph",
     features: [
       "Everything in Business",
       "Unlimited OCR",
-      "Advanced document processing",
-      "Unlimited image history",
-      "Fastest processing priority",
-      "VIP support",
+      "Advanced document extraction",
+      "Handwriting recognition",
+      "AI writing & rewriting",
+      "AI translation",
+      "Document history",
+      "Fastest processing",
+      "Priority support",
     ],
   },
 ];
@@ -177,7 +183,15 @@ export default function PricingPage() {
                 )}
 
                 <div className="p-8">
-                  <h2 className="text-3xl font-bold">{plan.name}</h2>
+                  <h2 className="text-3xl font-bold">
+                    {plan.planKey === "free"
+                      ? "Scan & Extract"
+                      : plan.planKey === "pro"
+                      ? "OCR + AI Writing"
+                      : plan.planKey === "business"
+                      ? "Document Workflow"
+                      : "Complete NOAH Workspace"}
+                  </h2>
 
                   <p className="text-zinc-400 mt-3">{plan.desc}</p>
 
