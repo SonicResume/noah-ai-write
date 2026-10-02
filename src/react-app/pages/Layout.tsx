@@ -5,16 +5,17 @@ import Footer from "../components/Footer";
 export default function DashboardLayout() {
   const location = useLocation();
 
-  // hide footer on tool page
-  const hideFooter = location.pathname === "/tool";
+  // The dashboard is the actual app workspace.
+  // Keep the marketing navigation/footer on public pages.
+  const isDashboard = location.pathname === "/dashboard";
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {!isDashboard && <Navbar />}
 
       <Outlet />
 
-      {!hideFooter && <Footer />}
+      {!isDashboard && <Footer />}
     </div>
   );
 }

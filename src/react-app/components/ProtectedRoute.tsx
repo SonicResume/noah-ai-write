@@ -1,46 +1,31 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../firebase";
+import { Navigate } from "react-router-dom";
 
-export default function Navbar() {
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+export default function ProtectedRoute({ children }: any) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <div className="flex justify-between p-4">
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
 
-      <h1>Logo</h1>
+    return () => unsub();
+  }, []);
 
-      <div className="flex gap-4">
+  // ⏳ Wait for Firebase to respond
+  if (loading) {
+    return <div className="p-10 text-center">Loading...</div>;
+  }
 
-        {/* TOOL BUTTON */}
-        <button
-          onClick={() => {
-            if (!token) {
-              navigate("/auth");   // 🔒 redirect if not logged in
-            } else {
-              navigate("/tool");   // ✅ allow if logged in
-            }
-          }}
-        >
-          Tool
-        </button>
+  // 🔒 Block access
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-        {/* LOGIN / LOGOUT */}
-        {!token ? (
-          <button onClick={() => navigate("/auth")}>
-            Login
-          </button>
-        ) : (
-          <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/");
-            }}
-          >
-            Logout
-          </button>
-        )}
-
-      </div>
-    </div>
-  );
+  // ✅ Allow access
+  return children;
 }

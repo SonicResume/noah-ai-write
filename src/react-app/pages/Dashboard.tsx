@@ -1,281 +1,563 @@
-import { useState, useEffect } from "react";
-import { 
-  RefreshCw, 
-  Expand, 
-  FileText, 
-  CheckCircle, 
-  MessageSquare, 
-  Languages,
-  Video,
-  Copy,
+import { useEffect, useMemo, useState } from "react";
+import {
   ArrowRight,
-  Download,
-  RotateCcw
+  BarChart3,
+  Camera,
+  CheckCircle2,
+  CreditCard,
+  FileText,
+  History,
+  LayoutDashboard,
+  LogOut,
+  ScanLine,
+  Settings,
+  Sparkles,
+  UserRound,
 } from "lucide-react";
-import { ToolButton } from "@/react-app/components/ToolButton";
-import { ToneSelector } from "@/react-app/components/ToneSelector";
-import { LanguageSelector } from "@/react-app/components/LanguageSelector";
-import { ContentTypeSelector, contentTypes } from "@/react-app/components/ContentTypeSelector";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 
-type Tool = "rewrite" | "expand" | "summarize" | "grammar" | "tone" | "translate";
+import { auth } from "../firebase";
+import { useHistory } from "../hooks/useHistory";
 
-const tools = [
-  { id: "rewrite" as Tool, label: "Rewrite", icon: RefreshCw, description: "Improve clarity and flow" },
-  { id: "expand" as Tool, label: "Expand", icon: Expand, description: "Add more detail and depth" },
-  { id: "summarize" as Tool, label: "Summarize", icon: FileText, description: "Condense to key points" },
-  { id: "grammar" as Tool, label: "Fix Grammar", icon: CheckCircle, description: "Correct errors" },
-  { id: "tone" as Tool, label: "Change Tone", icon: MessageSquare, description: "Adjust voice and style" },
-  { id: "translate" as Tool, label: "Translate", icon: Languages, description: "Convert to another language" },
+type BillingState = {
+  plan: string;
+  credits: number;
+  dailyScans: number;
+  dailyLimit: number | null;
+  remaining: number | null;
+};
+
+const PLAN_META: Record<
+  string,
+  { name: string; price: number; limit: string }
+> = {
+  free: {
+    name: "Free",
+    price: 0,
+    limit: "10 OCR scans per day",
+  },
+  pro: {
+    name: "Pro",
+    price: 19,
+    limit: "Unlimited OCR scans",
+  },
+  business: {
+    name: "Business",
+    price: 29,
+    limit: "Unlimited OCR scans",
+  },
+  premium: {
+    name: "Premium",
+    price: 49,
+    limit: "Unlimited OCR scans",
+  },
+};
+
+const navItems = [
+  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { label: "Scanner", to: "/app", icon: ScanLine },
+  { label: "Camera", to: "/camera", icon: Camera },
+  { label: "Documents", to: "/dashboard#documents", icon: FileText },
+  { label: "History", to: "/dashboard#history", icon: History },
+  { label: "Usage", to: "/dashboard#usage", icon: BarChart3 },
+  { label: "Billing", to: "/pricing", icon: CreditCard },
+  { label: "Settings", to: "/dashboard#settings", icon: Settings },
 ];
 
-const tones = ["Professional", "Casual", "Formal", "Friendly", "Persuasive", "Academic"];
-const languages = ["Spanish", "French", "German", "Italian", "Portuguese", "Japanese", "Chinese", "Korean"];
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const { history } = useHistory();
 
-export default function ToolPage() {
-  const [selectedTool, setSelectedTool] = useState<Tool>("rewrite");
-  const [inputText, setInputText] = useState("");
-  const [outputText, setOutputText] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedTone, setSelectedTone] = useState(tones[0]);
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
-  const [selectedContentType, setSelectedContentType] = useState(contentTypes[0].id);
-  const [copied, setCopied] = useState(false);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
 
-  // Load Google Fonts
+  const [billing, setBilling] = useState<BillingState>({
+    plan: "free",
+    credits: 0,
+    dailyScans: 0,
+    dailyLimit: 10,
+    remaining: 10,
+  });
+
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const link = document.createElement("link");
-    link.href = "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap";
-    link.rel = "stylesheet";
-    document.head.appendChild(link);
-    return () => { document.head.removeChild(link); };
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
 
-  const handleReset = () => {
-    setInputText("");
-    setOutputText("");
-  };
-
-const handleProcess = async () => {
-  if (!inputText.trim()) return;
-
-  if (inputText.length > 10000) {
-    alert("Text too long (max 10,000 characters)");
-    return;
-  }
-
-  setIsProcessing(true);
-  setOutputText("");
-
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://my-backend-1-qdhh.onrender.com";
-
-  const controller = new AbortController();
-
-  // Allow up to 2 minutes for AI processing.
-  const timeout = setTimeout(() => controller.abort(), 120000);
-
-  const payload = {
-    text: inputText,
-    tool: selectedTool,
-    contentType: selectedContentType,
-    ...(selectedTool === "tone" ? { tone: selectedTone } : {}),
-    ...(selectedTool === "translate" ? { language: selectedLanguage } : {}),
-  };
-
-  try {
-    const response = await fetch(`${API_URL}/api/ai`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
+      if (!currentUser) {
+        navigate("/login");
+      }
     });
 
-    if (!response.ok) {
-      throw new Error(
-        `AI service error (${response.status}): ${await response.text()}`
-      );
-    }
+    return unsubscribe;
+  }, [navigate]);
 
-    const data = await response.json();
+  useEffect(() => {
+    if (!user?.email) return;
 
-    if (!data?.result) {
-      throw new Error("The AI service returned an empty response.");
-    }
+    const loadBilling = async () => {
+      try {
+        const response = await fetch(
+          `https://billing-service-qorj.onrender.com/user/${encodeURIComponent(
+            user.email
+          )}`
+        );
 
-    setOutputText(data.result);
-  } catch (error: any) {
-    if (error?.name === "AbortError") {
-      setOutputText(
-        "The AI request timed out. Please try again."
+        if (!response.ok) {
+          throw new Error("Unable to load billing status");
+        }
+
+        const data = await response.json();
+
+        setBilling({
+          plan: String(data?.plan || "free").toLowerCase(),
+          credits: Number(data?.credits || 0),
+          dailyScans: Number(data?.dailyScans || 0),
+          dailyLimit:
+            data?.dailyLimit == null ? null : Number(data.dailyLimit),
+          remaining:
+            data?.remaining == null ? null : Number(data.remaining),
+        });
+      } catch (error) {
+        console.error("Billing status error:", error);
+      }
+    };
+
+    loadBilling();
+  }, [user?.email]);
+
+  const todayScans = useMemo(() => {
+    const today = new Date();
+
+    return history.filter((entry) => {
+      const date = new Date(entry.timestamp);
+
+      return (
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate()
       );
-    } else {
-      setOutputText(
-        error?.message || "Processing failed. Please try again."
-      );
-    }
-  } finally {
-    clearTimeout(timeout);
-    setIsProcessing(false);
+    }).length;
+  }, [history]);
+
+  const currentPlan = PLAN_META[billing.plan] ?? PLAN_META.free;
+
+  const billingStatus =
+    currentPlan.name === "Free"
+      ? "Free account"
+      : "Paid plan entitlement";
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F7F2EC] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-[#6B625B]">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#35D07F] border-t-transparent" />
+          Loading NOAH...
+        </div>
+      </div>
+    );
   }
-};
-const handleCopy = async () => {
-    if (!outputText) return;
-    await navigator.clipboard.writeText(outputText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
-  const handleExport = () => {
-    if (!outputText) return;
-    
-    const blob = new Blob([outputText], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `AIWrite-${selectedTool}-${Date.now()}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-background ink-pattern">
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        
-        {/* Content Type Selection */}
-        <ContentTypeSelector 
-          selectedType={selectedContentType} 
-          onSelect={setSelectedContentType} 
-        />
+    <div className="min-h-screen bg-[#F7F2EC] text-[#171717]">
+      <div className="flex min-h-screen">
+        <aside className="hidden w-64 flex-col border-r border-[#DDD2C7] bg-[#F7F2EC] lg:flex">
+          <div className="flex h-20 items-center gap-3 border-b border-[#EEE7E0] px-6">
+            <img
+              src="/dashboard.png"
+              alt="dashboard"
+              className="h-10 w-10 rounded-xl object-contain"
+            />
 
-        {/* Tool Selection */}
-        <div className="mb-8">
-          <h2 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Select a tool</h2>
-          <div className="flex flex-wrap gap-2">
-            {tools.map((tool) => (
-              <ToolButton
-                key={tool.id}
-                tool={tool}
-                isSelected={selectedTool === tool.id}
-                onClick={() => setSelectedTool(tool.id)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Additional Options for Tone/Translate */}
-        {selectedTool === "tone" && (
-          <ToneSelector 
-            tones={tones} 
-            selectedTone={selectedTone} 
-            onSelect={setSelectedTone} 
-          />
-        )}
-        {selectedTool === "translate" && (
-          <LanguageSelector 
-            languages={languages} 
-            selectedLanguage={selectedLanguage} 
-            onSelect={setSelectedLanguage} 
-          />
-        )}
-
-        {/* Main Content Area */}
-        <div className="grid md:grid-cols-2 gap-6">
-          
-          {/* Input Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Your Text</label>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">{inputText.length} characters</span>
+            <div>
+              <div className="font-black tracking-tight">WorkSpace</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9A8D82]">
+                Your account
               </div>
             </div>
-            
-            <div className="relative">
-              <textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Paste or type your text here..."
-                className="w-full h-72 p-4 bg-card border border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all custom-scrollbar text-foreground placeholder:text-muted-foreground"
-              />
-            </div>
-            
-            {/* Action Bar */}
-            <div className="flex justify-between items-center pt-2">
-              <button 
-                type="button"
-                onClick={handleReset}
-                disabled={!inputText && !outputText}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border rounded-lg bg-card text-foreground hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              >
-                <RotateCcw className="w-4 h-4" /> Reset
-              </button>
+          </div>
 
-              <button
-                type="button"
-                onClick={handleProcess}
-                disabled={isProcessing || !inputText.trim()}
-                className="flex items-center gap-2 px-5 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
+          <nav className="flex-1 space-y-1 p-4">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+
+              if (item.to.includes("#")) {
+                return (
+                  <a
+                    key={item.label}
+                    href={item.to}
+                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[#6B625B] transition hover:bg-[#F7F2EC]"
+                  >
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </a>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={item.label}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                      isActive
+                        ? "bg-[#35D07F] text-[#07140D]"
+                        : "text-[#6B625B] hover:bg-[#F7F2EC]"
+                    }`
+                  }
+                >
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          <div className="border-t border-[#EEE7E0] p-4">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[#8A5A50] hover:bg-red-50"
+            >
+              <LogOut className="h-5 w-5" />
+              Sign out
+            </button>
+          </div>
+        </aside>
+
+        <main className="min-w-0 flex-1">
+          <header className="border-b border-[#DDD2C7] bg-white/90 px-4 py-5 backdrop-blur sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9A8D82]">
+                  Usage & Activity
+                </p>
+
+                <h1 className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">
+                  Welcome back
+                </h1>
+              </div>
+
+              <div className="hidden items-center gap-3 rounded-xl border border-[#DDD2C7] bg-[#F7F2EC] px-3 py-2 sm:flex">
+                <UserRound className="h-4 w-4 text-[#6B625B]" />
+                <span className="max-w-[240px] truncate text-sm font-semibold text-[#4F443D]">
+                  {user.email}
+                </span>
+              </div>
+            </div>
+          </header>
+
+          <div className="mx-auto max-w-7xl space-y-8 p-4 sm:p-6 lg:p-8">
+            <section className="overflow-hidden rounded-3xl border border-[#DDD2C7] bg-white">
+              <div className="grid gap-8 p-6 md:grid-cols-[1fr_auto] md:p-8">
+                <div>
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#EAFBF1] px-3 py-1.5 text-xs font-bold text-[#16824A]">
+                    <Sparkles className="h-4 w-4" />
+                    Manage your scans, documents, usage, and plan
+                  </div>
+
+                  <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
+                    Turn every image into usable digital text.
+                  </h2>
+
+                  <p className="mt-4 max-w-2xl text-[#6B625B]">
+                    Start a scan, capture a document, or open one of your recent
+                    results.
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <Link
+                      to="/app"
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#35D07F] px-5 py-3 font-bold text-[#07140D]"
+                    >
+                      <ScanLine className="h-5 w-5" />
+                      New Scan
+                    </Link>
+
+                    <Link
+                      to="/camera"
+                      className="inline-flex items-center gap-2 rounded-xl border border-[#DDD2C7] bg-white px-5 py-3 font-bold text-[#40372F] hover:bg-[#F7F2EC]"
+                    >
+                      <Camera className="h-5 w-5" />
+                      Open Camera
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="hidden items-center justify-center md:flex">
+                  <div className="rounded-3xl bg-[#F7F2EC] p-8">
+                    <div className="rounded-2xl bg-white p-6 shadow-sm">
+                      <CheckCircle2 className="h-12 w-12 text-[#35D07F]" />
+                      <p className="mt-3 font-black">Ready to scan</p>
+                      <p className="mt-1 text-sm text-[#8A7D72]">
+                        OCR engine available
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                {
+                  label: "Total scans",
+                  value: history.length,
+                  icon: ScanLine,
+                },
+                {
+                  label: "Saved documents",
+                  value: history.length,
+                  icon: FileText,
+                },
+                {
+                  label: "Today's scans",
+                  value: billing.dailyScans,
+                  icon: BarChart3,
+                },
+                {
+                  label: "Current plan",
+                  value: currentPlan.name,
+                  icon: CreditCard,
+                },
+              ].map((stat) => {
+                const Icon = stat.icon;
+
+                return (
+                  <div
+                    key={stat.label}
+                    className="rounded-2xl border border-[#DDD2C7] bg-white p-5"
+                  >
+                    <div className="rounded-xl bg-[#EAFBF1] p-2.5 w-fit">
+                      <Icon className="h-5 w-5 text-[#16824A]" />
+                    </div>
+
+                    <p className="mt-5 text-sm font-semibold text-[#8A7D72]">
+                      {stat.label}
+                    </p>
+
+                    <p className="mt-1 text-3xl font-black">{stat.value}</p>
+                  </div>
+                );
+              })}
+            </section>
+
+            <section
+              id="billing"
+              className="rounded-3xl border border-[#DDD2C7] bg-white p-6"
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9A8D82]">
+                Current plan
+              </p>
+
+              <div className="mt-2 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-3xl font-black">
+                    {currentPlan.name}
+                  </h3>
+
+                  <p className="mt-1 text-[#6B625B]">
+                    ${currentPlan.price}/month · {currentPlan.limit}
+                  </p>
+
+                  <p className="mt-2 text-sm font-semibold text-[#16824A]">
+                    {billingStatus}
+                  </p>
+                </div>
+
+                <Link
+                  to="/pricing"
+                  className="inline-flex items-center justify-center rounded-xl bg-[#35D07F] px-5 py-3 font-bold text-[#07140D]"
+                >
+                  Manage Plan
+                </Link>
+              </div>
+            </section>
+
+            <section
+              id="history"
+              className="rounded-3xl border border-[#DDD2C7] bg-white"
+            >
+              <div className="flex items-center justify-between border-b border-[#EEE7E0] px-6 py-5">
+                <div>
+                  <h3 className="text-xl font-black">Recent scans</h3>
+                  <p className="mt-1 text-sm text-[#8A7D72]">
+                    Your latest OCR activity.
+                  </p>
+                </div>
+
+                <Link
+                  to="/app"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-[#16824A]"
+                >
+                  Open scanner
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              {history.length === 0 ? (
+                <div className="px-6 py-14 text-center">
+                  <FileText className="mx-auto h-10 w-10 text-[#B8AAA0]" />
+                  <p className="mt-4 font-bold">No scans yet</p>
+                  <p className="mt-1 text-sm text-[#8A7D72]">
+                    Your recognized documents will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-[#EEE7E0]">
+                  {history.slice(0, 6).map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="flex items-center justify-between gap-4 px-6 py-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-[#2F2722]">
+                          {entry.text || "Untitled scan"}
+                        </p>
+
+                        <p className="mt-1 text-xs text-[#8A7D72]">
+                          {new Date(entry.timestamp).toLocaleString()} ·{" "}
+                          {entry.confidence.toFixed(1)}% confidence
+                        </p>
+                      </div>
+
+                      <span className="shrink-0 rounded-full bg-[#EAFBF1] px-3 py-1 text-xs font-bold text-[#16824A]">
+                        {entry.source}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="grid gap-6 lg:grid-cols-2">
+              <div
+                id="usage"
+                className="rounded-3xl border border-[#DDD2C7] bg-white p-6"
               >
-                {isProcessing ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" /> Processing...
-                  </>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-black">Usage</h3>
+
+                    <p className="mt-1 text-sm text-[#8A7D72]">
+                      {billing.dailyLimit === null
+                        ? "Unlimited OCR scans"
+                        : `${billing.dailyScans} of ${billing.dailyLimit} scans today`}
+                    </p>
+                  </div>
+
+                  <BarChart3 className="h-6 w-6 text-[#16824A]" />
+                </div>
+
+                {billing.dailyLimit === null ? (
+                  <div className="mt-6 rounded-xl bg-[#EAFBF1] px-4 py-4">
+                    <p className="font-bold text-[#16824A]">
+                      Unlimited OCR scans
+                    </p>
+
+                    <p className="mt-1 text-sm text-[#4F443D]">
+                      {billing.dailyScans} scans recorded today.
+                    </p>
+                  </div>
                 ) : (
                   <>
-                    Generate content <ArrowRight className="w-4 h-4" />
+                    <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#EEE7E0]">
+                      <div
+                        className="h-full rounded-full bg-[#35D07F] transition-all"
+                        style={{
+                          width: `${Math.min(
+                            (billing.dailyScans / billing.dailyLimit) * 100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+
+                    <div className="mt-3 flex justify-between text-sm">
+                      <span className="font-semibold text-[#4F443D]">
+                        {billing.remaining} remaining
+                      </span>
+
+                      <span className="text-[#8A7D72]">
+                        {currentPlan.name} plan
+                      </span>
+                    </div>
+
+                    {billing.remaining === 0 && (
+                      <div className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4">
+                        <p className="font-bold text-red-700">
+                          Daily scan limit reached
+                        </p>
+
+                        <p className="mt-1 text-sm text-red-600">
+                          Upgrade to Pro for unlimited OCR scans.
+                        </p>
+
+                        <Link
+                          to="/pricing"
+                          className="mt-3 inline-flex rounded-lg bg-[#35D07F] px-4 py-2 text-sm font-bold text-[#07140D]"
+                        >
+                          Upgrade to Pro
+                        </Link>
+                      </div>
+                    )}
                   </>
                 )}
-              </button>
-            </div>
-          </div>
+              </div>
 
-          {/* Output Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Generated Output</label>
-              {outputText && !isProcessing && (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleCopy}
-                    className="flex items-center gap-1 text-xs text-primary hover:underline font-medium transition-all"
-                  >
-                    <Copy className="w-3 h-3" />
-                    {copied ? "Copied!" : "Copy Output"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleExport}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground font-medium transition-all"
-                  >
-                    <Download className="w-3 h-3" /> Export
-                  </button>
-                </div>
-              )}
-            </div>
-            
-            <div className="relative">
-              {isProcessing && (
-                <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] flex justify-center items-center rounded-xl z-10">
-                  <RefreshCw className="w-8 h-8 text-primary animate-spin" />
-                </div>
-              )}
-              <textarea
-                value={outputText}
-                readOnly
-                placeholder="AI response layout content outputs here..."
-                className="w-full h-72 p-4 bg-card border border-border rounded-xl resize-none focus:outline-none text-foreground placeholder:text-muted-foreground custom-scrollbar"
-              />
-            </div>
-          </div>
+              <div
+                id="documents"
+                className="rounded-3xl border border-[#DDD2C7] bg-white p-6"
+              >
+                <h3 className="text-xl font-black">Documents</h3>
 
-        </div>
-      </main>
+                <p className="mt-1 text-sm text-[#8A7D72]">
+                  Saved OCR results: {history.length}
+                </p>
+
+                <Link
+                  to="/app"
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#DDD2C7] px-4 py-3 text-sm font-bold hover:bg-[#F7F2EC]"
+                >
+                  Manage documents
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </section>
+
+            <section
+              id="settings"
+              className="rounded-3xl border border-[#DDD2C7] bg-white p-6"
+            >
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="text-xl font-black">Account</h3>
+
+                  <p className="mt-1 text-sm text-[#8A7D72]">
+                    {user.email}
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#E2CFC8] px-4 py-3 text-sm font-bold text-[#8A5A50] hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

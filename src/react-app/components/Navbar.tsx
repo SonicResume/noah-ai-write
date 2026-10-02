@@ -1,133 +1,107 @@
-import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  const location = useLocation();
-
-  // Helper function to dynamically add the playful wavy border on active tabs
-  const isActive = (path: string) => location.pathname === path;
-
   return (
-    <nav className="noah-nav-container">
-      {/* Dynamic CSS Styling Injector - Solves all clipping & responsiveness bugs */}
-      <style>{`
-        .noah-nav-container * {
-          box-sizing: border-box !important;
-          margin: 0;
-          padding: 0;
-        }
-        .noah-nav-container {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 16px 24px;
-          max-width: 1100px;
-          margin: 0 auto;
-          background-color: #FFFDF9;
-          font-family: 'Inter', Arial, sans-serif;
-        }
-        .noah-nav-flex-group {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .noah-nav-brand {
-          font-weight: 900;
-          font-size: 18px;
-          text-decoration: none;
-          color: #361E1B;
-          letter-spacing: -0.5px;
-        }
-        .noah-nav-center-menu {
-          display: flex;
-          gap: 28px;
-          align-items: center;
-        }
-        .noah-nav-link {
-          text-decoration: none;
-          color: #6E4A45;
-          font-size: 14px;
-          font-weight: 700;
-          padding-bottom: 2px;
-          border-bottom: 2px solid transparent;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-        .noah-nav-link:hover {
-          color: #FA5A15;
-        }
-        .noah-nav-link-active {
-          color: #FA5A15;
-          border-bottom: 2px wavy #FA5A15;
-        }
-        .noah-nav-btn-primary {
-          padding: 10px 18px;
-          background: linear-gradient(135deg, #FA5A15, #E04D03);
-          color: #FFFFFF;
-          border: 2.5px solid #361E1B;
-          border-radius: 12px;
-          font-weight: 900;
-          font-size: 14px;
-          cursor: pointer;
-          box-shadow: 3px 3px 0px 0px #361E1B;
-          transition: transform 0.1s ease, box-shadow 0.1s ease;
-        }
-        .noah-nav-btn-primary:hover {
-          transform: translate(-1px, -1px);
-          box-shadow: 4px 4px 0px 0px #361E1B;
-        }
-        .noah-nav-btn-primary:active {
-          transform: translate(2px, 2px);
-          box-shadow: 1px 1px 0px 0px #361E1B;
-        }
-        
-        /* Mobile Breakpoint Optimization Screen Shield */
-        @media (max-width: 640px) {
-          .noah-nav-center-menu {
-            gap: 14px;
-          }
-          .noah-nav-brand {
-            display: none; /* Collapses text name on small mobile viewports to prevent layout break */
-          }
-        }
-      `}</style>
+    <nav
+      style={{
+        width: "100%",
+        background: "#000000",
+        borderBottom: "1px solid #1f1f1f",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "14px 24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "24px",
+        }}
+      >
+        {/* LEFT */}
+        <Link
+          to="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            textDecoration: "none",
+            flexShrink: 0,
+          }}
+        >
+          <img
+            src="/logo.png"
+            alt="NOAH AI"
+            style={{
+              width: "38px",
+              height: "38px",
+              objectFit: "contain",
+            }}
+          />
 
-      {/* LEFT SECTION - Brand Identity */}
-      <div className="noah-nav-flex-group">
-        <img 
-          src="/logo.png" 
-          style={{ width: "30px", height: "30px", objectFit: "contain" }} 
-          alt="NOAH AI Logo" 
-        />
-        <Link to="/" className="noah-nav-brand">
-          NOAH AI Writer
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: "17px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <span style={{ color: "#35d07f" }}>NOAH</span>
+            <span style={{ color: "#ffffff" }}> AI Writer</span>
+          </span>
         </Link>
+
+        {/* CENTER */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "28px",
+          }}
+        >
+          <Link to="/" style={link}>
+            Home
+          </Link>
+
+          <Link to="/pricing" style={link}>
+            Pricing
+          </Link>
+
+          <Link to="/contact" style={link}>
+            Contact
+          </Link>
+        </div>
+
+        {/* RIGHT */}
+        <div style={{ flexShrink: 0 }}>
+          <Link to="/login" style={{ textDecoration: "none" }}>
+            <button type="button" style={button}>
+              Start Free
+            </button>
+          </Link>
+        </div>
       </div>
-
-      {/* CENTER SECTION - Core Application Hub Links */}
-      <div className="noah-nav-center-menu">
-        <Link to="/" className={`noah-nav-link ${isActive("/") ? "noah-nav-link-active" : ""}`}>
-          Home
-        </Link>
-        <Link to="/pricing" className={`noah-nav-link ${isActive("/pricing") ? "noah-nav-link-active" : ""}`}>
-          Pricing
-        </Link>
-        <Link to="/blog" className={`noah-nav-link ${isActive("/blog") ? "noah-nav-link-active" : ""}`}>
-          Blog 📝
-        </Link>
-        <Link to="/contact" className={`noah-nav-link ${isActive("/contact") ? "noah-nav-link-active" : ""}`}>
-          Contact
-        </Link>
-      </div>
-
-      {/* RIGHT SECTION - Single Access Gate (No separate signup route) */}
-      <div className="noah-nav-flex-group">
-        <Link to="/login" style={{ textDecoration: "none" }}>
-          <button className="noah-nav-btn-primary">
-            Log In 🔥
-          </button>
-        </Link>
-      </div>
-
     </nav>
   );
 }
+
+const link: React.CSSProperties = {
+  textDecoration: "none",
+  color: "#e5e7eb",
+  fontSize: "14px",
+  fontWeight: 500,
+  transition: "color 0.2s ease",
+};
+
+const button: React.CSSProperties = {
+  padding: "10px 18px",
+  background: "#35d07f",
+  color: "#07140d",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontWeight: 700,
+  fontSize: "14px",
+};

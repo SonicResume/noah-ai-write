@@ -1,87 +1,103 @@
 export default function ContactPage() {
   return (
-    <div style={page}>
-      <div style={card}>
-        <h1 style={title}>Contact Us</h1>
-        <p style={subtitle}>Choose how you want to reach us</p>
+    <div
+      style={{
+        background: "#F7F2EC",
+        minHeight: "100vh",
+        padding: "80px 20px",
+        textAlign: "center",
+        fontFamily: "sans-serif",
+        color: "#171717",
+      }}
+    >
+      {/* HEADER */}
+      <h1
+        style={{
+          fontSize: 40,
+          marginBottom: 10,
+          color: "#171717",
+          fontWeight: 900,
+          letterSpacing: "-1px",
+        }}
+      >
+        Contact NOAH
+      </h1>
 
-        <button
-          style={primaryButton}
-          onClick={() =>
-            (window.location.href = "https://www.sonicresume.com/contact")
-          }
-        >
-          📩 SonicResume Contact
-        </button>
+      <p
+        style={{
+          color: "#6B625B",
+          fontWeight: 700,
+          marginBottom: 40,
+          fontSize: 16,
+        }}
+      >
+        Connect with the NOAH AI Visual Scanner team
+      </p>
 
-        <button
-          style={secondaryButton}
-          onClick={() =>
-            (window.location.href =
-              "https://www.facebook.com/profile.php?id=61585916721060")
-          }
+      {/* CARD */}
+      <div
+        style={{
+          maxWidth: 460,
+          margin: "0 auto",
+          padding: 40,
+          borderRadius: 18,
+          background: "#FFFFFF",
+          border: "1px solid #DDD2C7",
+          boxShadow: "0 20px 50px rgba(66, 45, 30, 0.08)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 18,
+          }}
         >
-          📘 Facebook Profile
-        </button>
+          {/* BUSINESS */}
+          <a
+            href="https://www.sonicresume.com/contact"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "block",
+              padding: 14,
+              borderRadius: 12,
+              border: "1px solid #2DBA70",
+              background: "#35D07F",
+              color: "#07140D",
+              fontWeight: "900",
+              fontSize: 14,
+              textDecoration: "none",
+              boxShadow: "0 8px 20px rgba(53, 208, 127, 0.18)",
+              transition: "0.2s",
+            }}
+          >
+            💼 Contact Support / Business
+          </a>
+
+          {/* FACEBOOK */}
+          <a
+            href="https://www.facebook.com/profile.php?id=61585916721060"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "block",
+              padding: 14,
+              borderRadius: 12,
+              border: "1px solid #DDD2C7",
+              background: "#F1EAE2",
+              color: "#2F241F",
+              fontWeight: "900",
+              fontSize: 14,
+              textDecoration: "none",
+              boxShadow: "0 8px 20px rgba(66, 45, 30, 0.08)",
+              transition: "0.2s",
+            }}
+          >
+            🌍 Facebook Community
+          </a>
+        </div>
       </div>
     </div>
   );
 }
-
-/* ---------------- STYLES (PEARL + ORANGE) ---------------- */
-
-const page = {
-  height: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "#FFF8F0", // pearl
-  fontFamily: "Arial, sans-serif",
-};
-
-const card = {
-  width: "90%",
-  maxWidth: "420px",
-  padding: "40px",
-  borderRadius: "20px",
-  background: "#FFF8F0",
-  border: "3px solid #3A241D",
-  boxShadow: "6px 6px 0px #3A241D",
-  textAlign: "center",
-};
-
-const title = {
-  fontSize: "28px",
-  fontWeight: "900",
-  color: "#2B1B16",
-  marginBottom: "8px",
-};
-
-const subtitle = {
-  fontSize: "14px",
-  color: "#7A5C55",
-  marginBottom: "24px",
-};
-
-const primaryButton = {
-  width: "100%",
-  padding: "14px",
-  marginBottom: "12px",
-  background: "#FA5A15", // orange
-  color: "#fff",
-  fontWeight: "800",
-  border: "2px solid #3A241D",
-  borderRadius: "12px",
-  cursor: "pointer",
-};
-
-const secondaryButton = {
-  width: "100%",
-  padding: "14px",
-  background: "#1877F2", // facebook blue
-  color: "#fff",
-  fontWeight: "800",
-  border: "2px solid #3A241D",
-  borderRadius: "12px",
-  cursor: "pointer",
-};

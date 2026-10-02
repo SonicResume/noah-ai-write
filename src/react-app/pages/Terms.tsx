@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ReactNode } from "react";
 
 export default function TermsPage() {
 
@@ -8,118 +9,94 @@ export default function TermsPage() {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <div className="min-h-screen bg-white px-6 py-16">
 
-      <div style={styles.wrapper}>
+      <div className="max-w-3xl mx-auto">
 
-        <Link to="/" style={styles.back}>
+        <Link
+          to="/"
+          className="text-sm text-purple-600 hover:text-purple-800 transition"
+        >
           ← Back to Home
         </Link>
 
-        <h1 style={styles.title}>Terms of Service</h1>
-        <p style={styles.date}>Effective date: 2026</p>
+        <h1 className="text-3xl font-bold mt-4 text-purple-700">
+          Terms of Service
+        </h1>
 
-        <div style={styles.card}>
+        <p className="text-sm text-gray-500 mt-1 mb-6">
+          Effective date: 2026
+        </p>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm space-y-6 text-sm leading-6 text-gray-700">
 
           <p>
             Welcome to AIWrite (“we”, “our”, or “us”). By using our service,
             you agree to these Terms of Service.
           </p>
 
-          <h2>1. Use of Service</h2>
-          <p>
+          <Section title="1. Use of Service">
             You may only use the service for lawful purposes. Abuse, scraping,
             reverse engineering, or attempts to disrupt the system are prohibited.
-          </p>
+          </Section>
 
-          <h2>2. Accounts</h2>
-          <p>
+          <Section title="2. Accounts">
             You are responsible for maintaining the security of your account
             and all activity under it.
-          </p>
+          </Section>
 
-          <h2>3. Free & Paid Plans</h2>
-          <p>
+          <Section title="3. Free & Paid Plans">
             Free usage may be limited. Paid plans provide increased access,
             features, and usage limits.
-          </p>
+          </Section>
 
-          <h2>4. Payments</h2>
-          <p>
+          <Section title="4. Payments">
             Payments are securely processed through Stripe. All payments are
             non-refundable unless required by law.
-          </p>
+          </Section>
 
-          <h2>5. Generated Content</h2>
-          <p>
+          <Section title="5. Generated Content">
             AI-generated content may not always be accurate or complete.
             You are responsible for reviewing all output before use.
-          </p>
+          </Section>
 
-          <h2>6. Disclaimer</h2>
-          <p>
+          <Section title="6. Disclaimer">
             The service is provided “as-is” without warranties of any kind.
-          </p>
+          </Section>
 
-          <h2>7. Limitation of Liability</h2>
-          <p>
+          <Section title="7. Limitation of Liability">
             We are not liable for any indirect, incidental, or consequential damages.
-          </p>
+          </Section>
 
-          <h2>8. Termination</h2>
-          <p>
+          <Section title="8. Termination">
             We reserve the right to suspend or terminate access if these Terms
             are violated.
-          </p>
+          </Section>
 
-          <h2>9. Changes</h2>
-          <p>
+          <Section title="9. Changes">
             These Terms may be updated at any time. Continued use of the service
             means you accept the updated Terms.
-          </p>
+          </Section>
 
-          <h2>10. Contact</h2>
-          <p>
+          <Section title="10. Contact">
             Use our Contact Page
-          </p>
+          </Section>
 
         </div>
 
       </div>
-
     </div>
   );
 }
 
-const styles = {
-  container: {
-    minHeight: "100vh",
-    padding: "60px 20px",
-    background: "#f5f5f5",
-  },
-  wrapper: {
-    maxWidth: 800,
-    margin: "0 auto",
-  },
-  back: {
-    display: "inline-block",
-    marginBottom: 20,
-    textDecoration: "none",
-    fontSize: 14,
-  },
-  title: {
-    fontSize: 32,
-    marginBottom: 5,
-  },
-  date: {
-    color: "#666",
-    marginBottom: 20,
-  },
-  card: {
-    background: "#fff",
-    padding: 30,
-    borderRadius: 12,
-    lineHeight: 1.6,
-    boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-  },
-};
+/* ✅ FIXED TYPESCRIPT COMPONENT */
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div>
+      <h2 className="text-purple-700 font-semibold mb-1">
+        {title}
+      </h2>
+      <p>{children}</p>
+    </div>
+  );
+}

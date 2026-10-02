@@ -1,15 +1,23 @@
-
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
-export default function Page() {
+export default function Logout() {
+  const navigate = useNavigate();
+
   useEffect(() => {
-
-    const run = async () => {
-      window.location.href = "/login";
+    const doLogout = async () => {
+      await signOut(auth);   // ✅ real logout
+      navigate("/login");
     };
 
-    run();
+    doLogout();
   }, []);
 
-  return <div className="p-6">Logging out...</div>;
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Logging out...</p>
+    </div>
+  );
 }
