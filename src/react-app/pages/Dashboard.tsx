@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
@@ -128,20 +128,6 @@ export default function Dashboard() {
     loadBilling();
   }, [user?.email]);
 
-  const todayScans = useMemo(() => {
-    const today = new Date();
-
-    return history.filter((entry) => {
-      const date = new Date(entry.timestamp);
-
-      return (
-        date.getFullYear() === today.getFullYear() &&
-        date.getMonth() === today.getMonth() &&
-        date.getDate() === today.getDate()
-      );
-    }).length;
-  }, [history]);
-
   const currentPlan = PLAN_META[billing.plan] ?? PLAN_META.free;
 
   const billingStatus =
@@ -170,7 +156,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#F7F2EC] text-[#171717]">
       <div className="flex min-h-screen">
-        <aside className="hidden w-64 flex-col border-r border-[#DDD2C7] bg-[#F7F2EC] lg:flex">
+        <aside className="hidden w-64 flex-col border-r border-[#DDD2C7] bg-white lg:flex">
           <div className="flex h-20 items-center gap-3 border-b border-[#EEE7E0] px-6">
             <img
               src="/dashboard.png"

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { Sparkles, MessageSquare, AlertCircle, CheckCircle } from "lucide-react";
+import { Sparkles, MessageSquare, AlertCircle } from "lucide-react";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const triggerError = (msg: string) => {
@@ -81,12 +80,6 @@ export default function ContactPage() {
           </button>
         </form>
 
-        {success && (
-          <div style={successBox}>
-            <CheckCircle style={{ width: 18, height: 18, color: "#16A34A" }} />
-            <span>{success}</span>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -196,13 +189,6 @@ const errorPopup = {
   background: "#FFFDF9",
 };
 
-const successBox = {
-  marginTop: "20px",
-  padding: "12px",
-  background: "#DCFCE7",
-  borderRadius: "12px",
-  fontWeight: 700,
-};
 
 const inlineSparkle = {
   width: 22,

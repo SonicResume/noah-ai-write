@@ -22,10 +22,10 @@ export default function ResetPassword() {
       await confirmPasswordReset(auth, oobCode, password);
       setMessage("Password reset successful!");
       setTimeout(() => navigate("/login"), 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setMessage(err.message);
-    }
+      setMessage(err instanceof Error ? err.message : "Something went wrong");
+     }
   };
 
   return (

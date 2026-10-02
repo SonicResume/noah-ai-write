@@ -53,12 +53,12 @@ export default async function handler(
     return res.status(200).json({
       url: data.url,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("CHECKOUT ERROR:", err);
 
     return res.status(500).json({
       error: "Checkout failed",
-      detail: err?.message || "unknown error",
+      detail: err instanceof Error ? err.message : "unknown error",
     });
   }
 }

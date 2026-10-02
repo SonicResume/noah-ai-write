@@ -20,7 +20,7 @@ const locations: LocationPoint[] = [
 ];
 
 export default function LandingPage() {
-  const globeRef = useRef<any>(null);
+  const globeRef = useRef<HTMLElement | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

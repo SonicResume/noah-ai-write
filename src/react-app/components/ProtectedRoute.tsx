@@ -3,7 +3,10 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../firebase";
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({ children }: any) {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 

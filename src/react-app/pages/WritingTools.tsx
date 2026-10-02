@@ -6,7 +6,6 @@ import {
   CheckCircle, 
   MessageSquare, 
   Languages,
-  Video,
   Copy,
   ArrowRight,
   Download,
@@ -109,9 +108,9 @@ const handleProcess = async () => {
     }
 
     setOutputText(data.result);
-  } catch (error: any) {
-    if (error?.name === "AbortError") {
-      setOutputText(
+   } catch (error: unknown) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+       setOutputText(
         "The AI request timed out. Please try again."
       );
     } else {
